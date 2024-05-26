@@ -1,0 +1,21 @@
+{
+  "scripts": {
+    "dev": "wrangler dev src/index.ts",
+    "deploy": "wrangler deploy --minify src/index.ts",
+    "generate:wagmi": "wagmi generate"
+  },
+  "dependencies": {
+    "@hono/swagger-ui": "^0.2.2",
+    "@hono/zod-openapi": "^0.12.1",
+    "@superfluid-finance/metadata": "^1.2.2",
+    "hono": "^4.3.7",
+    "viem": "^2.10.5",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240403.0",
+    "@superfluid-finance/ethereum-contracts": "^1.9.1",
+    "@wagmi/cli": "^2.1.4",
+    "wrangler": "^3.47.0"
+  }
+}
