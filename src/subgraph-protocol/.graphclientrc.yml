@@ -1,0 +1,16 @@
+sources:
+  - name: superfluid-protocol
+    handler:
+      graphql:
+        endpoint: "{context.url:https://optimism-mainnet.subgraph.x.superfluid.dev}"
+        timeout: 3000 # 3 seconds
+documents:
+  - "./*.graphql"
+transforms:
+  - autoPagination:
+      validateSchema: false
+codegen:
+  scalars:
+    BigInt: string
+    Bytes: string
+    BigDecimal: string

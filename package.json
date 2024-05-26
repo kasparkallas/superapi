@@ -2,7 +2,8 @@
   "scripts": {
     "dev": "wrangler dev src/index.ts",
     "deploy": "wrangler deploy --minify src/index.ts",
-    "generate:wagmi": "wagmi generate"
+    "generate:wagmi": "wagmi generate",
+    "generate:subgraph-protocol": "graphclient build --dir ./src/subgraph-protocol"
   },
   "dependencies": {
     "@hono/swagger-ui": "^0.2.2",
@@ -14,6 +15,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240403.0",
+    "@graphprotocol/client-cli": "2",
     "@superfluid-finance/ethereum-contracts": "^1.9.1",
     "@wagmi/cli": "^2.1.4",
     "wrangler": "^3.47.0"

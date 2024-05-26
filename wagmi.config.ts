@@ -1,5 +1,6 @@
 import { defineConfig } from '@wagmi/cli'
 import bundledAbi from "@superfluid-finance/ethereum-contracts/build/bundled-abi.json" assert { type: "json" };
+import superfluidPoolAbi from "@superfluid-finance/ethereum-contracts/build/truffle/SuperfluidPool.json" assert { type: "json" };
 import { Abi, Address } from 'viem';
 import superfluidMetadata from "@superfluid-finance/metadata";
 
@@ -33,6 +34,10 @@ export default defineConfig({
         },
         {} as Record<number, Address>,
       ),
+    },
+    {
+      name: "Superfluid Pool",
+      abi: superfluidPoolAbi.abi as Abi,
     },
   ],
   plugins: [

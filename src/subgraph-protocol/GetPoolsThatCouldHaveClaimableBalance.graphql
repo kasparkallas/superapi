@@ -1,0 +1,26 @@
+query GetPoolsThatCouldHaveClaimableBalance($account: String!, $token: String!) {
+  poolMembers(
+    first: 2000,
+    where: {
+      or: [
+        {
+          account: $account
+          pool_: { token: $token }
+          isConnected: false
+          units_gt: "0"
+        }
+        {
+          account: $account
+          pool_: { token: $token }
+          isConnected: false
+          units: "0"
+          totalAmountReceivedUntilUpdatedAt_gt: "0"
+        }
+      ]
+    }
+  ) {
+    pool {
+      id
+    }
+  }
+}
