@@ -15,7 +15,7 @@ import { getBuiltGraphSDK } from "./subgraph-protocol/.graphclient";
 const app = new OpenAPIHono();
 
 const RequestSchema = z.object({
-  chain: z.coerce.number().openapi({
+  chain: z.coerce.number().int().positive().openapi({
     param: {
       name: "chain",
       in: "query",
@@ -49,17 +49,17 @@ const ResponseSchema = z
     chain: z.number(),
     token: z.string().refine(isAddress),
     account: z.string().refine(isAddress),
-    connectedNetFlow: z.bigint().transform((x) => x.toString()),
-    connectedBalance: z.bigint().transform((x) => x.toString()),
-    unconnectedBalance: z.bigint().transform((x) => x.toString()),
-    timestamp: z.bigint().transform((x) => x.toString()),
+    connectedNetFlow: z.coerce.string(),
+    connectedBalance: z.coerce.string(),
+    unconnectedBalance: z.coerce.string(),
+    timestamp: z.coerce.string(),
     maybeCriticalAt: z
-      .bigint()
-      .transform((x) => x.toString())
+      .coerce
+      .string()
       .nullable(),
   })
   .strict()
-  .openapi("Balance");
+  .openapi("SuperTokenBalance");
 
 const route = createRoute({
   method: "get",
@@ -181,7 +181,7 @@ app.openapi(route, async (c) => {
     maybeCriticalAt,
   });
 
-  return c.json(response);
+  return c.json(response, 200);
 });
 
 app.doc31("/api/doc", {
