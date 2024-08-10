@@ -60,6 +60,7 @@ const ResponseSchema = z
     underlyingToken: z.object({
       address: z.string().refine(isAddress),
       balance: z.coerce.string(),
+      decimals: z.coerce.number().int(),
     }).nullable(),
   })
   .strict()
@@ -208,6 +209,7 @@ app.openapi(route, async (c) => {
     underlyingToken: superToken.underlyingToken ? {
       address: superToken.underlyingToken.id as Address,
       balance: underlyingTokenBalance,
+      decimals: superToken.underlyingToken.decimals
     } : null
   });
 
