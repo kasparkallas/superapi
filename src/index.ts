@@ -134,7 +134,7 @@ app.openapi(route, async (c) => {
   const chainId = network.chain.id;
   const isGDAsupported = gdaAddress[chainId as keyof typeof gdaAddress];
 
-  const [realtimeBalanceOfNow, cfaFlowRate, gdaFlowRate, underlyingTokenBalance, ...claimableNows] =
+  const [realtimeBalanceOfNow, cfaFlowRate, underlyingTokenBalance, gdaFlowRate, ...claimableNows] =
     await Promise.all([
       publicClient.readContract({
         abi: superTokenAbi,
