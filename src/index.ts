@@ -1,4 +1,4 @@
-import { Address, createPublicClient, http, isAddress } from "viem";
+import { Address, createPublicClient, erc20Abi, http, isAddress } from "viem";
 import { findNetwork } from "./networks";
 import {
   cfaAbi,
@@ -57,6 +57,10 @@ const ResponseSchema = z
       .coerce
       .string()
       .nullable(),
+    underlyingToken: z.object({
+      address: z.string().refine(isAddress),
+      balance: z.coerce.string(),
+    }).nullable(),
   })
   .strict()
   .openapi("SuperTokenBalance");
@@ -83,6 +87,12 @@ app.openapi(route, async (c) => {
   const { account, chain, token } = c.req.valid("query");
   const network = findNetwork(chain);
 
+  const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET,HEAD,POST,OPTIONS",
+    "Access-Control-Max-Age": "86400",
+  };
+
   if (!network) {
     throw new Error("How to better handle this?");
     // return c.text("Network not found");
@@ -92,11 +102,20 @@ app.openapi(route, async (c) => {
     url: `https://${network.metadata.name}.subgraph.x.superfluid.dev`,
   });
 
-  const { poolMembers } =
-    await subgraphClient.GetPoolsThatCouldHaveClaimableBalance({
+  const [{ poolMembers }, { token: superToken }] = await Promise.all([
+    subgraphClient.GetPoolsThatCouldHaveClaimableBalance({
       account: account.toLowerCase(),
       token: token.toLowerCase(),
-    });
+    }),
+    subgraphClient.GetToken({
+      token: token.toLowerCase(),
+    })
+  ]);
+
+  if (!superToken || !superToken.isSuperToken) {
+    throw new Error("Token not found");
+  }
+
   const poolIds = [...new Set(poolMembers.map((x) => x.pool.id as Address))];
 
   if (poolIds.length === 2000) {
@@ -114,7 +133,7 @@ app.openapi(route, async (c) => {
   const chainId = network.chain.id;
   const isGDAsupported = gdaAddress[chainId as keyof typeof gdaAddress];
 
-  const [realtimeBalanceOfNow, cfaFlowRate, gdaFlowRate, ...claimableNows] =
+  const [realtimeBalanceOfNow, cfaFlowRate, gdaFlowRate, underlyingTokenBalance, ...claimableNows] =
     await Promise.all([
       publicClient.readContract({
         abi: superTokenAbi,
@@ -128,23 +147,30 @@ app.openapi(route, async (c) => {
         functionName: "getNetFlow",
         args: [token, account],
       }),
+      superToken.underlyingToken ?
+        publicClient.readContract({
+          abi: erc20Abi,
+          address: superToken.underlyingToken.id as Address,
+          functionName: "balanceOf",
+          args: [account],
+        }) : Promise.resolve(null),
       isGDAsupported
         ? publicClient.readContract({
-            abi: gdaAbi,
-            address: gdaAddress[chainId as keyof typeof gdaAddress],
-            functionName: "getNetFlow",
-            args: [token, account],
-          })
+          abi: gdaAbi,
+          address: gdaAddress[chainId as keyof typeof gdaAddress],
+          functionName: "getNetFlow",
+          args: [token, account],
+        })
         : Promise.resolve(null),
       ...(isGDAsupported
         ? poolIds.map((poolId) =>
-            publicClient.readContract({
-              abi: superfluidPoolAbi,
-              address: poolId,
-              functionName: "getClaimableNow",
-              args: [account],
-            })
-          )
+          publicClient.readContract({
+            abi: superfluidPoolAbi,
+            address: poolId,
+            functionName: "getClaimableNow",
+            args: [account],
+          })
+        )
         : []),
     ]);
 
@@ -179,9 +205,13 @@ app.openapi(route, async (c) => {
     unconnectedBalance,
     timestamp,
     maybeCriticalAt,
+    underlyingToken: superToken.underlyingToken ? {
+      address: superToken.underlyingToken.id as Address,
+      balance: underlyingTokenBalance,
+    } : null
   });
 
-  return c.json(response, 200);
+  return c.json(response, 200, corsHeaders);
 });
 
 app.doc31("/api/doc", {

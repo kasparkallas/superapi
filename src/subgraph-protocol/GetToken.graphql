@@ -1,0 +1,10 @@
+query GetToken($token: ID!)  {
+  token(id: $token) {
+    isSuperToken
+    isNativeAssetSuperToken
+    underlyingToken {
+      id
+      decimals
+    }
+  }
+}

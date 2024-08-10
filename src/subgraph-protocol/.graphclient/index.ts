@@ -43,6 +43,7 @@ export type Scalars = {
   BigInt: string;
   Bytes: string;
   Int8: any;
+  Timestamp: any;
 };
 
 /**
@@ -1685,6 +1686,10 @@ export type Account_orderBy =
   | 'tokenDowngradedEvents'
   | 'accountTokenSnapshots';
 
+export type Aggregation_interval =
+  | 'hour'
+  | 'day';
+
 export type AgreementClassRegisteredEvent = Event & {
   id: Scalars['ID'];
   transactionHash: Scalars['Bytes'];
@@ -2688,7 +2693,7 @@ export type ApprovalEvent = Event & {
   name: Scalars['String'];
   /**
    * Contains the addresses that were impacted by this event:
-   * addresses[0] = `isNFTApproval` ? `nft address` : `token` (superToken)
+   * addresses[0] = `token` (superToken)
    * addresses[1] = `owner`
    * addresses[2] = `to`
    *
@@ -2698,33 +2703,21 @@ export type ApprovalEvent = Event & {
   logIndex: Scalars['BigInt'];
   order: Scalars['BigInt'];
   /**
-   * The address that will be granting allowance to transfer ERC20/NFT.
+   * The address that will be granting allowance to transfer ERC20.
    *
    */
   owner: Account;
   /**
-   * The address that will be granted allowance to transfer ERC20/NFT.
+   * The address that will be granted allowance to transfer ERC20.
    *
    */
   to: Account;
-  /**
-   * Indicates whether the event was emitted for the approval of an NFT.
-   *
-   */
-  isNFTApproval: Scalars['Boolean'];
   /**
    * If `amount` is non-zero, this event was emitted for the approval of an ERC20.
    * Tne amount of ERC20 tokens that will be granted allowance to transfer.
    *
    */
   amount: Scalars['BigInt'];
-  /**
-   * If `tokenId` is non-zero, this event was emitted for the approval of an NFT.
-   * The id of the NFT that will be granted allowance to transfer.
-   * The id is: uint256(keccak256(abi.encode(block.chainid, superToken, sender, receiver)))
-   *
-   */
-  tokenId: Scalars['BigInt'];
 };
 
 export type ApprovalEvent_filter = {
@@ -2862,10 +2855,6 @@ export type ApprovalEvent_filter = {
   to_not_ends_with?: InputMaybe<Scalars['String']>;
   to_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
   to_?: InputMaybe<Account_filter>;
-  isNFTApproval?: InputMaybe<Scalars['Boolean']>;
-  isNFTApproval_not?: InputMaybe<Scalars['Boolean']>;
-  isNFTApproval_in?: InputMaybe<Array<Scalars['Boolean']>>;
-  isNFTApproval_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
   amount?: InputMaybe<Scalars['BigInt']>;
   amount_not?: InputMaybe<Scalars['BigInt']>;
   amount_gt?: InputMaybe<Scalars['BigInt']>;
@@ -2874,14 +2863,6 @@ export type ApprovalEvent_filter = {
   amount_lte?: InputMaybe<Scalars['BigInt']>;
   amount_in?: InputMaybe<Array<Scalars['BigInt']>>;
   amount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  tokenId?: InputMaybe<Scalars['BigInt']>;
-  tokenId_not?: InputMaybe<Scalars['BigInt']>;
-  tokenId_gt?: InputMaybe<Scalars['BigInt']>;
-  tokenId_lt?: InputMaybe<Scalars['BigInt']>;
-  tokenId_gte?: InputMaybe<Scalars['BigInt']>;
-  tokenId_lte?: InputMaybe<Scalars['BigInt']>;
-  tokenId_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  tokenId_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<ApprovalEvent_filter>>>;
@@ -2913,212 +2894,7 @@ export type ApprovalEvent_orderBy =
   | 'to__updatedAtTimestamp'
   | 'to__updatedAtBlockNumber'
   | 'to__isSuperApp'
-  | 'isNFTApproval'
-  | 'amount'
-  | 'tokenId';
-
-export type ApprovalForAllEvent = Event & {
-  id: Scalars['ID'];
-  transactionHash: Scalars['Bytes'];
-  gasPrice: Scalars['BigInt'];
-  gasUsed: Scalars['BigInt'];
-  timestamp: Scalars['BigInt'];
-  name: Scalars['String'];
-  /**
-   * Contains the addresses that were impacted by this event:
-   * addresses[0] = NFT address
-   * addresses[1] = `owner`
-   * addresses[2] = `operator`
-   *
-   */
-  addresses: Array<Scalars['Bytes']>;
-  blockNumber: Scalars['BigInt'];
-  logIndex: Scalars['BigInt'];
-  order: Scalars['BigInt'];
-  owner: Account;
-  /**
-   * The address that will be granted operator permissions for the all of the owner's tokens.
-   *
-   */
-  operator: Account;
-  /**
-   * Whether the operator is enabled or disabled for `owner`.
-   *
-   */
-  approved: Scalars['Boolean'];
-};
-
-export type ApprovalForAllEvent_filter = {
-  id?: InputMaybe<Scalars['ID']>;
-  id_not?: InputMaybe<Scalars['ID']>;
-  id_gt?: InputMaybe<Scalars['ID']>;
-  id_lt?: InputMaybe<Scalars['ID']>;
-  id_gte?: InputMaybe<Scalars['ID']>;
-  id_lte?: InputMaybe<Scalars['ID']>;
-  id_in?: InputMaybe<Array<Scalars['ID']>>;
-  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
-  transactionHash?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_not?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_gt?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_lt?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_gte?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_lte?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  transactionHash_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  transactionHash_contains?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_not_contains?: InputMaybe<Scalars['Bytes']>;
-  gasPrice?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_not?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_gt?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_lt?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_gte?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_lte?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  gasPrice_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  gasUsed?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_not?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_gt?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_lt?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_gte?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_lte?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  gasUsed_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  timestamp?: InputMaybe<Scalars['BigInt']>;
-  timestamp_not?: InputMaybe<Scalars['BigInt']>;
-  timestamp_gt?: InputMaybe<Scalars['BigInt']>;
-  timestamp_lt?: InputMaybe<Scalars['BigInt']>;
-  timestamp_gte?: InputMaybe<Scalars['BigInt']>;
-  timestamp_lte?: InputMaybe<Scalars['BigInt']>;
-  timestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  timestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  name?: InputMaybe<Scalars['String']>;
-  name_not?: InputMaybe<Scalars['String']>;
-  name_gt?: InputMaybe<Scalars['String']>;
-  name_lt?: InputMaybe<Scalars['String']>;
-  name_gte?: InputMaybe<Scalars['String']>;
-  name_lte?: InputMaybe<Scalars['String']>;
-  name_in?: InputMaybe<Array<Scalars['String']>>;
-  name_not_in?: InputMaybe<Array<Scalars['String']>>;
-  name_contains?: InputMaybe<Scalars['String']>;
-  name_contains_nocase?: InputMaybe<Scalars['String']>;
-  name_not_contains?: InputMaybe<Scalars['String']>;
-  name_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  name_starts_with?: InputMaybe<Scalars['String']>;
-  name_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  name_not_starts_with?: InputMaybe<Scalars['String']>;
-  name_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  name_ends_with?: InputMaybe<Scalars['String']>;
-  name_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  name_not_ends_with?: InputMaybe<Scalars['String']>;
-  name_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  addresses?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_not?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_contains?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_contains_nocase?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_not_contains?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_not_contains_nocase?: InputMaybe<Array<Scalars['Bytes']>>;
-  blockNumber?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_not?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_gt?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_lt?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_gte?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_lte?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  blockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  logIndex?: InputMaybe<Scalars['BigInt']>;
-  logIndex_not?: InputMaybe<Scalars['BigInt']>;
-  logIndex_gt?: InputMaybe<Scalars['BigInt']>;
-  logIndex_lt?: InputMaybe<Scalars['BigInt']>;
-  logIndex_gte?: InputMaybe<Scalars['BigInt']>;
-  logIndex_lte?: InputMaybe<Scalars['BigInt']>;
-  logIndex_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  logIndex_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  order?: InputMaybe<Scalars['BigInt']>;
-  order_not?: InputMaybe<Scalars['BigInt']>;
-  order_gt?: InputMaybe<Scalars['BigInt']>;
-  order_lt?: InputMaybe<Scalars['BigInt']>;
-  order_gte?: InputMaybe<Scalars['BigInt']>;
-  order_lte?: InputMaybe<Scalars['BigInt']>;
-  order_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  order_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  owner?: InputMaybe<Scalars['String']>;
-  owner_not?: InputMaybe<Scalars['String']>;
-  owner_gt?: InputMaybe<Scalars['String']>;
-  owner_lt?: InputMaybe<Scalars['String']>;
-  owner_gte?: InputMaybe<Scalars['String']>;
-  owner_lte?: InputMaybe<Scalars['String']>;
-  owner_in?: InputMaybe<Array<Scalars['String']>>;
-  owner_not_in?: InputMaybe<Array<Scalars['String']>>;
-  owner_contains?: InputMaybe<Scalars['String']>;
-  owner_contains_nocase?: InputMaybe<Scalars['String']>;
-  owner_not_contains?: InputMaybe<Scalars['String']>;
-  owner_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  owner_starts_with?: InputMaybe<Scalars['String']>;
-  owner_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  owner_not_starts_with?: InputMaybe<Scalars['String']>;
-  owner_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  owner_ends_with?: InputMaybe<Scalars['String']>;
-  owner_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  owner_not_ends_with?: InputMaybe<Scalars['String']>;
-  owner_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  owner_?: InputMaybe<Account_filter>;
-  operator?: InputMaybe<Scalars['String']>;
-  operator_not?: InputMaybe<Scalars['String']>;
-  operator_gt?: InputMaybe<Scalars['String']>;
-  operator_lt?: InputMaybe<Scalars['String']>;
-  operator_gte?: InputMaybe<Scalars['String']>;
-  operator_lte?: InputMaybe<Scalars['String']>;
-  operator_in?: InputMaybe<Array<Scalars['String']>>;
-  operator_not_in?: InputMaybe<Array<Scalars['String']>>;
-  operator_contains?: InputMaybe<Scalars['String']>;
-  operator_contains_nocase?: InputMaybe<Scalars['String']>;
-  operator_not_contains?: InputMaybe<Scalars['String']>;
-  operator_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  operator_starts_with?: InputMaybe<Scalars['String']>;
-  operator_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  operator_not_starts_with?: InputMaybe<Scalars['String']>;
-  operator_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  operator_ends_with?: InputMaybe<Scalars['String']>;
-  operator_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  operator_not_ends_with?: InputMaybe<Scalars['String']>;
-  operator_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  operator_?: InputMaybe<Account_filter>;
-  approved?: InputMaybe<Scalars['Boolean']>;
-  approved_not?: InputMaybe<Scalars['Boolean']>;
-  approved_in?: InputMaybe<Array<Scalars['Boolean']>>;
-  approved_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
-  /** Filter for the block changed event. */
-  _change_block?: InputMaybe<BlockChangedFilter>;
-  and?: InputMaybe<Array<InputMaybe<ApprovalForAllEvent_filter>>>;
-  or?: InputMaybe<Array<InputMaybe<ApprovalForAllEvent_filter>>>;
-};
-
-export type ApprovalForAllEvent_orderBy =
-  | 'id'
-  | 'transactionHash'
-  | 'gasPrice'
-  | 'gasUsed'
-  | 'timestamp'
-  | 'name'
-  | 'addresses'
-  | 'blockNumber'
-  | 'logIndex'
-  | 'order'
-  | 'owner'
-  | 'owner__id'
-  | 'owner__createdAtTimestamp'
-  | 'owner__createdAtBlockNumber'
-  | 'owner__updatedAtTimestamp'
-  | 'owner__updatedAtBlockNumber'
-  | 'owner__isSuperApp'
-  | 'operator'
-  | 'operator__id'
-  | 'operator__createdAtTimestamp'
-  | 'operator__createdAtBlockNumber'
-  | 'operator__updatedAtTimestamp'
-  | 'operator__updatedAtBlockNumber'
-  | 'operator__isSuperApp'
-  | 'approved';
+  | 'amount';
 
 export type BlockChangedFilter = {
   number_gte: Scalars['Int'];
@@ -8904,149 +8680,6 @@ export type MemberUnitsUpdatedEvent_orderBy =
   | 'poolMember__syncedPerUnitSettledValue'
   | 'poolMember__syncedPerUnitFlowRate';
 
-export type MetadataUpdateEvent = Event & {
-  id: Scalars['ID'];
-  transactionHash: Scalars['Bytes'];
-  gasPrice: Scalars['BigInt'];
-  gasUsed: Scalars['BigInt'];
-  timestamp: Scalars['BigInt'];
-  name: Scalars['String'];
-  /**
-   * Empty addresses array.
-   *
-   */
-  addresses: Array<Scalars['Bytes']>;
-  blockNumber: Scalars['BigInt'];
-  logIndex: Scalars['BigInt'];
-  order: Scalars['BigInt'];
-  /**
-   * The id of the NFT that will be granted allowance to transfer.
-   * The id is: uint256(keccak256(abi.encode(block.chainid, superToken, sender, receiver)))
-   *
-   */
-  tokenId: Scalars['BigInt'];
-};
-
-export type MetadataUpdateEvent_filter = {
-  id?: InputMaybe<Scalars['ID']>;
-  id_not?: InputMaybe<Scalars['ID']>;
-  id_gt?: InputMaybe<Scalars['ID']>;
-  id_lt?: InputMaybe<Scalars['ID']>;
-  id_gte?: InputMaybe<Scalars['ID']>;
-  id_lte?: InputMaybe<Scalars['ID']>;
-  id_in?: InputMaybe<Array<Scalars['ID']>>;
-  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
-  transactionHash?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_not?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_gt?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_lt?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_gte?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_lte?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  transactionHash_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  transactionHash_contains?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_not_contains?: InputMaybe<Scalars['Bytes']>;
-  gasPrice?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_not?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_gt?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_lt?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_gte?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_lte?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  gasPrice_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  gasUsed?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_not?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_gt?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_lt?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_gte?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_lte?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  gasUsed_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  timestamp?: InputMaybe<Scalars['BigInt']>;
-  timestamp_not?: InputMaybe<Scalars['BigInt']>;
-  timestamp_gt?: InputMaybe<Scalars['BigInt']>;
-  timestamp_lt?: InputMaybe<Scalars['BigInt']>;
-  timestamp_gte?: InputMaybe<Scalars['BigInt']>;
-  timestamp_lte?: InputMaybe<Scalars['BigInt']>;
-  timestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  timestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  name?: InputMaybe<Scalars['String']>;
-  name_not?: InputMaybe<Scalars['String']>;
-  name_gt?: InputMaybe<Scalars['String']>;
-  name_lt?: InputMaybe<Scalars['String']>;
-  name_gte?: InputMaybe<Scalars['String']>;
-  name_lte?: InputMaybe<Scalars['String']>;
-  name_in?: InputMaybe<Array<Scalars['String']>>;
-  name_not_in?: InputMaybe<Array<Scalars['String']>>;
-  name_contains?: InputMaybe<Scalars['String']>;
-  name_contains_nocase?: InputMaybe<Scalars['String']>;
-  name_not_contains?: InputMaybe<Scalars['String']>;
-  name_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  name_starts_with?: InputMaybe<Scalars['String']>;
-  name_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  name_not_starts_with?: InputMaybe<Scalars['String']>;
-  name_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  name_ends_with?: InputMaybe<Scalars['String']>;
-  name_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  name_not_ends_with?: InputMaybe<Scalars['String']>;
-  name_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  addresses?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_not?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_contains?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_contains_nocase?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_not_contains?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_not_contains_nocase?: InputMaybe<Array<Scalars['Bytes']>>;
-  blockNumber?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_not?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_gt?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_lt?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_gte?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_lte?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  blockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  logIndex?: InputMaybe<Scalars['BigInt']>;
-  logIndex_not?: InputMaybe<Scalars['BigInt']>;
-  logIndex_gt?: InputMaybe<Scalars['BigInt']>;
-  logIndex_lt?: InputMaybe<Scalars['BigInt']>;
-  logIndex_gte?: InputMaybe<Scalars['BigInt']>;
-  logIndex_lte?: InputMaybe<Scalars['BigInt']>;
-  logIndex_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  logIndex_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  order?: InputMaybe<Scalars['BigInt']>;
-  order_not?: InputMaybe<Scalars['BigInt']>;
-  order_gt?: InputMaybe<Scalars['BigInt']>;
-  order_lt?: InputMaybe<Scalars['BigInt']>;
-  order_gte?: InputMaybe<Scalars['BigInt']>;
-  order_lte?: InputMaybe<Scalars['BigInt']>;
-  order_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  order_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  tokenId?: InputMaybe<Scalars['BigInt']>;
-  tokenId_not?: InputMaybe<Scalars['BigInt']>;
-  tokenId_gt?: InputMaybe<Scalars['BigInt']>;
-  tokenId_lt?: InputMaybe<Scalars['BigInt']>;
-  tokenId_gte?: InputMaybe<Scalars['BigInt']>;
-  tokenId_lte?: InputMaybe<Scalars['BigInt']>;
-  tokenId_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  tokenId_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  /** Filter for the block changed event. */
-  _change_block?: InputMaybe<BlockChangedFilter>;
-  and?: InputMaybe<Array<InputMaybe<MetadataUpdateEvent_filter>>>;
-  or?: InputMaybe<Array<InputMaybe<MetadataUpdateEvent_filter>>>;
-};
-
-export type MetadataUpdateEvent_orderBy =
-  | 'id'
-  | 'transactionHash'
-  | 'gasPrice'
-  | 'gasUsed'
-  | 'timestamp'
-  | 'name'
-  | 'addresses'
-  | 'blockNumber'
-  | 'logIndex'
-  | 'order'
-  | 'tokenId';
-
 export type MintedEvent = Event & {
   id: Scalars['ID'];
   transactionHash: Scalars['Bytes'];
@@ -11046,10 +10679,6 @@ export type Query = {
   tokenUpgradedEvents: Array<TokenUpgradedEvent>;
   approvalEvent?: Maybe<ApprovalEvent>;
   approvalEvents: Array<ApprovalEvent>;
-  approvalForAllEvent?: Maybe<ApprovalForAllEvent>;
-  approvalForAllEvents: Array<ApprovalForAllEvent>;
-  metadataUpdateEvent?: Maybe<MetadataUpdateEvent>;
-  metadataUpdateEvents: Array<MetadataUpdateEvent>;
   customSuperTokenCreatedEvent?: Maybe<CustomSuperTokenCreatedEvent>;
   customSuperTokenCreatedEvents: Array<CustomSuperTokenCreatedEvent>;
   superTokenCreatedEvent?: Maybe<SuperTokenCreatedEvent>;
@@ -11910,42 +11539,6 @@ export type QueryapprovalEventsArgs = {
   orderBy?: InputMaybe<ApprovalEvent_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<ApprovalEvent_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QueryapprovalForAllEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QueryapprovalForAllEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<ApprovalForAllEvent_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<ApprovalForAllEvent_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QuerymetadataUpdateEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QuerymetadataUpdateEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<MetadataUpdateEvent_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<MetadataUpdateEvent_filter>;
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
@@ -14465,10 +14058,6 @@ export type Subscription = {
   tokenUpgradedEvents: Array<TokenUpgradedEvent>;
   approvalEvent?: Maybe<ApprovalEvent>;
   approvalEvents: Array<ApprovalEvent>;
-  approvalForAllEvent?: Maybe<ApprovalForAllEvent>;
-  approvalForAllEvents: Array<ApprovalForAllEvent>;
-  metadataUpdateEvent?: Maybe<MetadataUpdateEvent>;
-  metadataUpdateEvents: Array<MetadataUpdateEvent>;
   customSuperTokenCreatedEvent?: Maybe<CustomSuperTokenCreatedEvent>;
   customSuperTokenCreatedEvents: Array<CustomSuperTokenCreatedEvent>;
   superTokenCreatedEvent?: Maybe<SuperTokenCreatedEvent>;
@@ -15329,42 +14918,6 @@ export type SubscriptionapprovalEventsArgs = {
   orderBy?: InputMaybe<ApprovalEvent_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<ApprovalEvent_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionapprovalForAllEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionapprovalForAllEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<ApprovalForAllEvent_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<ApprovalForAllEvent_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionmetadataUpdateEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionmetadataUpdateEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<MetadataUpdateEvent_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<MetadataUpdateEvent_filter>;
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
@@ -19353,7 +18906,7 @@ export type TransferEvent = Event & {
   name: Scalars['String'];
   /**
    * Contains the addresses that were impacted by this event:
-   * addresses[0] = `token` (superToken if `isNFTTransfer` is false, otherwise the ConstantOutflowNFT or ConstantInflowNFT)
+   * addresses[0] = `token`
    * addresses[1] = `from`
    * addresses[2] = `to`
    *
@@ -19364,16 +18917,7 @@ export type TransferEvent = Event & {
   order: Scalars['BigInt'];
   from: Account;
   to: Account;
-  isNFTTransfer: Scalars['Boolean'];
-  /**
-   * If `isNFTTransfer` is true, value is the `tokenId` of the NFT transferred.
-   *
-   */
   value: Scalars['BigInt'];
-  /**
-   * If `isNFTTransfer` is true, value is the NFT address, else it is the SuperToken address.
-   *
-   */
   token: Scalars['Bytes'];
 };
 
@@ -19512,10 +19056,6 @@ export type TransferEvent_filter = {
   to_not_ends_with?: InputMaybe<Scalars['String']>;
   to_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
   to_?: InputMaybe<Account_filter>;
-  isNFTTransfer?: InputMaybe<Scalars['Boolean']>;
-  isNFTTransfer_not?: InputMaybe<Scalars['Boolean']>;
-  isNFTTransfer_in?: InputMaybe<Array<Scalars['Boolean']>>;
-  isNFTTransfer_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
   value?: InputMaybe<Scalars['BigInt']>;
   value_not?: InputMaybe<Scalars['BigInt']>;
   value_gt?: InputMaybe<Scalars['BigInt']>;
@@ -19565,7 +19105,6 @@ export type TransferEvent_orderBy =
   | 'to__updatedAtTimestamp'
   | 'to__updatedAtBlockNumber'
   | 'to__isSuperApp'
-  | 'isNFTTransfer'
   | 'value'
   | 'token';
 
@@ -19772,6 +19311,8 @@ export type _Block_ = {
   number: Scalars['Int'];
   /** Integer representation of the timestamp stored in blocks for the chain */
   timestamp?: Maybe<Scalars['Int']>;
+  /** The hash of the parent block */
+  parentHash?: Maybe<Scalars['Bytes']>;
 };
 
 /** The type for the top-level _meta field */
@@ -19891,6 +19432,7 @@ export type ResolversTypes = ResolversObject<{
   AccountTokenSnapshot_orderBy: AccountTokenSnapshot_orderBy;
   Account_filter: Account_filter;
   Account_orderBy: Account_orderBy;
+  Aggregation_interval: Aggregation_interval;
   AgreementClassRegisteredEvent: ResolverTypeWrapper<AgreementClassRegisteredEvent>;
   AgreementClassRegisteredEvent_filter: AgreementClassRegisteredEvent_filter;
   AgreementClassRegisteredEvent_orderBy: AgreementClassRegisteredEvent_orderBy;
@@ -19909,9 +19451,6 @@ export type ResolversTypes = ResolversObject<{
   ApprovalEvent: ResolverTypeWrapper<ApprovalEvent>;
   ApprovalEvent_filter: ApprovalEvent_filter;
   ApprovalEvent_orderBy: ApprovalEvent_orderBy;
-  ApprovalForAllEvent: ResolverTypeWrapper<ApprovalForAllEvent>;
-  ApprovalForAllEvent_filter: ApprovalForAllEvent_filter;
-  ApprovalForAllEvent_orderBy: ApprovalForAllEvent_orderBy;
   BigDecimal: ResolverTypeWrapper<Scalars['BigDecimal']>;
   BigInt: ResolverTypeWrapper<Scalars['BigInt']>;
   BlockChangedFilter: BlockChangedFilter;
@@ -19939,7 +19478,7 @@ export type ResolversTypes = ResolversObject<{
   DistributionClaimedEvent: ResolverTypeWrapper<DistributionClaimedEvent>;
   DistributionClaimedEvent_filter: DistributionClaimedEvent_filter;
   DistributionClaimedEvent_orderBy: DistributionClaimedEvent_orderBy;
-  Event: ResolversTypes['AgreementClassRegisteredEvent'] | ResolversTypes['AgreementClassUpdatedEvent'] | ResolversTypes['AgreementLiquidatedByEvent'] | ResolversTypes['AgreementLiquidatedV2Event'] | ResolversTypes['AppRegisteredEvent'] | ResolversTypes['ApprovalEvent'] | ResolversTypes['ApprovalForAllEvent'] | ResolversTypes['BondIncreasedEvent'] | ResolversTypes['BufferAdjustedEvent'] | ResolversTypes['BurnedEvent'] | ResolversTypes['CFAv1LiquidationPeriodChangedEvent'] | ResolversTypes['ConfigChangedEvent'] | ResolversTypes['CustomSuperTokenCreatedEvent'] | ResolversTypes['DistributionClaimedEvent'] | ResolversTypes['ExitRateChangedEvent'] | ResolversTypes['FlowDistributionUpdatedEvent'] | ResolversTypes['FlowOperatorUpdatedEvent'] | ResolversTypes['FlowUpdatedEvent'] | ResolversTypes['GovernanceReplacedEvent'] | ResolversTypes['IndexCreatedEvent'] | ResolversTypes['IndexDistributionClaimedEvent'] | ResolversTypes['IndexSubscribedEvent'] | ResolversTypes['IndexUnitsUpdatedEvent'] | ResolversTypes['IndexUnsubscribedEvent'] | ResolversTypes['IndexUpdatedEvent'] | ResolversTypes['InstantDistributionUpdatedEvent'] | ResolversTypes['JailEvent'] | ResolversTypes['MemberUnitsUpdatedEvent'] | ResolversTypes['MetadataUpdateEvent'] | ResolversTypes['MintedEvent'] | ResolversTypes['NewPICEvent'] | ResolversTypes['PPPConfigurationChangedEvent'] | ResolversTypes['PoolConnectionUpdatedEvent'] | ResolversTypes['PoolCreatedEvent'] | ResolversTypes['RewardAddressChangedEvent'] | ResolversTypes['RoleAdminChangedEvent'] | ResolversTypes['RoleGrantedEvent'] | ResolversTypes['RoleRevokedEvent'] | ResolversTypes['SentEvent'] | ResolversTypes['SetEvent'] | ResolversTypes['SubscriptionApprovedEvent'] | ResolversTypes['SubscriptionDistributionClaimedEvent'] | ResolversTypes['SubscriptionRevokedEvent'] | ResolversTypes['SubscriptionUnitsUpdatedEvent'] | ResolversTypes['SuperTokenCreatedEvent'] | ResolversTypes['SuperTokenFactoryUpdatedEvent'] | ResolversTypes['SuperTokenLogicCreatedEvent'] | ResolversTypes['SuperTokenLogicUpdatedEvent'] | ResolversTypes['SuperTokenMinimumDepositChangedEvent'] | ResolversTypes['TokenDowngradedEvent'] | ResolversTypes['TokenUpgradedEvent'] | ResolversTypes['TransferEvent'] | ResolversTypes['TrustedForwarderChangedEvent'];
+  Event: ResolversTypes['AgreementClassRegisteredEvent'] | ResolversTypes['AgreementClassUpdatedEvent'] | ResolversTypes['AgreementLiquidatedByEvent'] | ResolversTypes['AgreementLiquidatedV2Event'] | ResolversTypes['AppRegisteredEvent'] | ResolversTypes['ApprovalEvent'] | ResolversTypes['BondIncreasedEvent'] | ResolversTypes['BufferAdjustedEvent'] | ResolversTypes['BurnedEvent'] | ResolversTypes['CFAv1LiquidationPeriodChangedEvent'] | ResolversTypes['ConfigChangedEvent'] | ResolversTypes['CustomSuperTokenCreatedEvent'] | ResolversTypes['DistributionClaimedEvent'] | ResolversTypes['ExitRateChangedEvent'] | ResolversTypes['FlowDistributionUpdatedEvent'] | ResolversTypes['FlowOperatorUpdatedEvent'] | ResolversTypes['FlowUpdatedEvent'] | ResolversTypes['GovernanceReplacedEvent'] | ResolversTypes['IndexCreatedEvent'] | ResolversTypes['IndexDistributionClaimedEvent'] | ResolversTypes['IndexSubscribedEvent'] | ResolversTypes['IndexUnitsUpdatedEvent'] | ResolversTypes['IndexUnsubscribedEvent'] | ResolversTypes['IndexUpdatedEvent'] | ResolversTypes['InstantDistributionUpdatedEvent'] | ResolversTypes['JailEvent'] | ResolversTypes['MemberUnitsUpdatedEvent'] | ResolversTypes['MintedEvent'] | ResolversTypes['NewPICEvent'] | ResolversTypes['PPPConfigurationChangedEvent'] | ResolversTypes['PoolConnectionUpdatedEvent'] | ResolversTypes['PoolCreatedEvent'] | ResolversTypes['RewardAddressChangedEvent'] | ResolversTypes['RoleAdminChangedEvent'] | ResolversTypes['RoleGrantedEvent'] | ResolversTypes['RoleRevokedEvent'] | ResolversTypes['SentEvent'] | ResolversTypes['SetEvent'] | ResolversTypes['SubscriptionApprovedEvent'] | ResolversTypes['SubscriptionDistributionClaimedEvent'] | ResolversTypes['SubscriptionRevokedEvent'] | ResolversTypes['SubscriptionUnitsUpdatedEvent'] | ResolversTypes['SuperTokenCreatedEvent'] | ResolversTypes['SuperTokenFactoryUpdatedEvent'] | ResolversTypes['SuperTokenLogicCreatedEvent'] | ResolversTypes['SuperTokenLogicUpdatedEvent'] | ResolversTypes['SuperTokenMinimumDepositChangedEvent'] | ResolversTypes['TokenDowngradedEvent'] | ResolversTypes['TokenUpgradedEvent'] | ResolversTypes['TransferEvent'] | ResolversTypes['TrustedForwarderChangedEvent'];
   Event_filter: Event_filter;
   Event_orderBy: Event_orderBy;
   ExitRateChangedEvent: ResolverTypeWrapper<ExitRateChangedEvent>;
@@ -19997,9 +19536,6 @@ export type ResolversTypes = ResolversObject<{
   MemberUnitsUpdatedEvent: ResolverTypeWrapper<MemberUnitsUpdatedEvent>;
   MemberUnitsUpdatedEvent_filter: MemberUnitsUpdatedEvent_filter;
   MemberUnitsUpdatedEvent_orderBy: MemberUnitsUpdatedEvent_orderBy;
-  MetadataUpdateEvent: ResolverTypeWrapper<MetadataUpdateEvent>;
-  MetadataUpdateEvent_filter: MetadataUpdateEvent_filter;
-  MetadataUpdateEvent_orderBy: MetadataUpdateEvent_orderBy;
   MintedEvent: ResolverTypeWrapper<MintedEvent>;
   MintedEvent_filter: MintedEvent_filter;
   MintedEvent_orderBy: MintedEvent_orderBy;
@@ -20088,6 +19624,7 @@ export type ResolversTypes = ResolversObject<{
   SuperTokenMinimumDepositChangedEvent: ResolverTypeWrapper<SuperTokenMinimumDepositChangedEvent>;
   SuperTokenMinimumDepositChangedEvent_filter: SuperTokenMinimumDepositChangedEvent_filter;
   SuperTokenMinimumDepositChangedEvent_orderBy: SuperTokenMinimumDepositChangedEvent_orderBy;
+  Timestamp: ResolverTypeWrapper<Scalars['Timestamp']>;
   Token: ResolverTypeWrapper<Token>;
   TokenDowngradedEvent: ResolverTypeWrapper<TokenDowngradedEvent>;
   TokenDowngradedEvent_filter: TokenDowngradedEvent_filter;
@@ -20137,8 +19674,6 @@ export type ResolversParentTypes = ResolversObject<{
   AppRegisteredEvent_filter: AppRegisteredEvent_filter;
   ApprovalEvent: ApprovalEvent;
   ApprovalEvent_filter: ApprovalEvent_filter;
-  ApprovalForAllEvent: ApprovalForAllEvent;
-  ApprovalForAllEvent_filter: ApprovalForAllEvent_filter;
   BigDecimal: Scalars['BigDecimal'];
   BigInt: Scalars['BigInt'];
   BlockChangedFilter: BlockChangedFilter;
@@ -20159,7 +19694,7 @@ export type ResolversParentTypes = ResolversObject<{
   CustomSuperTokenCreatedEvent_filter: CustomSuperTokenCreatedEvent_filter;
   DistributionClaimedEvent: DistributionClaimedEvent;
   DistributionClaimedEvent_filter: DistributionClaimedEvent_filter;
-  Event: ResolversParentTypes['AgreementClassRegisteredEvent'] | ResolversParentTypes['AgreementClassUpdatedEvent'] | ResolversParentTypes['AgreementLiquidatedByEvent'] | ResolversParentTypes['AgreementLiquidatedV2Event'] | ResolversParentTypes['AppRegisteredEvent'] | ResolversParentTypes['ApprovalEvent'] | ResolversParentTypes['ApprovalForAllEvent'] | ResolversParentTypes['BondIncreasedEvent'] | ResolversParentTypes['BufferAdjustedEvent'] | ResolversParentTypes['BurnedEvent'] | ResolversParentTypes['CFAv1LiquidationPeriodChangedEvent'] | ResolversParentTypes['ConfigChangedEvent'] | ResolversParentTypes['CustomSuperTokenCreatedEvent'] | ResolversParentTypes['DistributionClaimedEvent'] | ResolversParentTypes['ExitRateChangedEvent'] | ResolversParentTypes['FlowDistributionUpdatedEvent'] | ResolversParentTypes['FlowOperatorUpdatedEvent'] | ResolversParentTypes['FlowUpdatedEvent'] | ResolversParentTypes['GovernanceReplacedEvent'] | ResolversParentTypes['IndexCreatedEvent'] | ResolversParentTypes['IndexDistributionClaimedEvent'] | ResolversParentTypes['IndexSubscribedEvent'] | ResolversParentTypes['IndexUnitsUpdatedEvent'] | ResolversParentTypes['IndexUnsubscribedEvent'] | ResolversParentTypes['IndexUpdatedEvent'] | ResolversParentTypes['InstantDistributionUpdatedEvent'] | ResolversParentTypes['JailEvent'] | ResolversParentTypes['MemberUnitsUpdatedEvent'] | ResolversParentTypes['MetadataUpdateEvent'] | ResolversParentTypes['MintedEvent'] | ResolversParentTypes['NewPICEvent'] | ResolversParentTypes['PPPConfigurationChangedEvent'] | ResolversParentTypes['PoolConnectionUpdatedEvent'] | ResolversParentTypes['PoolCreatedEvent'] | ResolversParentTypes['RewardAddressChangedEvent'] | ResolversParentTypes['RoleAdminChangedEvent'] | ResolversParentTypes['RoleGrantedEvent'] | ResolversParentTypes['RoleRevokedEvent'] | ResolversParentTypes['SentEvent'] | ResolversParentTypes['SetEvent'] | ResolversParentTypes['SubscriptionApprovedEvent'] | ResolversParentTypes['SubscriptionDistributionClaimedEvent'] | ResolversParentTypes['SubscriptionRevokedEvent'] | ResolversParentTypes['SubscriptionUnitsUpdatedEvent'] | ResolversParentTypes['SuperTokenCreatedEvent'] | ResolversParentTypes['SuperTokenFactoryUpdatedEvent'] | ResolversParentTypes['SuperTokenLogicCreatedEvent'] | ResolversParentTypes['SuperTokenLogicUpdatedEvent'] | ResolversParentTypes['SuperTokenMinimumDepositChangedEvent'] | ResolversParentTypes['TokenDowngradedEvent'] | ResolversParentTypes['TokenUpgradedEvent'] | ResolversParentTypes['TransferEvent'] | ResolversParentTypes['TrustedForwarderChangedEvent'];
+  Event: ResolversParentTypes['AgreementClassRegisteredEvent'] | ResolversParentTypes['AgreementClassUpdatedEvent'] | ResolversParentTypes['AgreementLiquidatedByEvent'] | ResolversParentTypes['AgreementLiquidatedV2Event'] | ResolversParentTypes['AppRegisteredEvent'] | ResolversParentTypes['ApprovalEvent'] | ResolversParentTypes['BondIncreasedEvent'] | ResolversParentTypes['BufferAdjustedEvent'] | ResolversParentTypes['BurnedEvent'] | ResolversParentTypes['CFAv1LiquidationPeriodChangedEvent'] | ResolversParentTypes['ConfigChangedEvent'] | ResolversParentTypes['CustomSuperTokenCreatedEvent'] | ResolversParentTypes['DistributionClaimedEvent'] | ResolversParentTypes['ExitRateChangedEvent'] | ResolversParentTypes['FlowDistributionUpdatedEvent'] | ResolversParentTypes['FlowOperatorUpdatedEvent'] | ResolversParentTypes['FlowUpdatedEvent'] | ResolversParentTypes['GovernanceReplacedEvent'] | ResolversParentTypes['IndexCreatedEvent'] | ResolversParentTypes['IndexDistributionClaimedEvent'] | ResolversParentTypes['IndexSubscribedEvent'] | ResolversParentTypes['IndexUnitsUpdatedEvent'] | ResolversParentTypes['IndexUnsubscribedEvent'] | ResolversParentTypes['IndexUpdatedEvent'] | ResolversParentTypes['InstantDistributionUpdatedEvent'] | ResolversParentTypes['JailEvent'] | ResolversParentTypes['MemberUnitsUpdatedEvent'] | ResolversParentTypes['MintedEvent'] | ResolversParentTypes['NewPICEvent'] | ResolversParentTypes['PPPConfigurationChangedEvent'] | ResolversParentTypes['PoolConnectionUpdatedEvent'] | ResolversParentTypes['PoolCreatedEvent'] | ResolversParentTypes['RewardAddressChangedEvent'] | ResolversParentTypes['RoleAdminChangedEvent'] | ResolversParentTypes['RoleGrantedEvent'] | ResolversParentTypes['RoleRevokedEvent'] | ResolversParentTypes['SentEvent'] | ResolversParentTypes['SetEvent'] | ResolversParentTypes['SubscriptionApprovedEvent'] | ResolversParentTypes['SubscriptionDistributionClaimedEvent'] | ResolversParentTypes['SubscriptionRevokedEvent'] | ResolversParentTypes['SubscriptionUnitsUpdatedEvent'] | ResolversParentTypes['SuperTokenCreatedEvent'] | ResolversParentTypes['SuperTokenFactoryUpdatedEvent'] | ResolversParentTypes['SuperTokenLogicCreatedEvent'] | ResolversParentTypes['SuperTokenLogicUpdatedEvent'] | ResolversParentTypes['SuperTokenMinimumDepositChangedEvent'] | ResolversParentTypes['TokenDowngradedEvent'] | ResolversParentTypes['TokenUpgradedEvent'] | ResolversParentTypes['TransferEvent'] | ResolversParentTypes['TrustedForwarderChangedEvent'];
   Event_filter: Event_filter;
   ExitRateChangedEvent: ExitRateChangedEvent;
   ExitRateChangedEvent_filter: ExitRateChangedEvent_filter;
@@ -20199,8 +19734,6 @@ export type ResolversParentTypes = ResolversObject<{
   JailEvent_filter: JailEvent_filter;
   MemberUnitsUpdatedEvent: MemberUnitsUpdatedEvent;
   MemberUnitsUpdatedEvent_filter: MemberUnitsUpdatedEvent_filter;
-  MetadataUpdateEvent: MetadataUpdateEvent;
-  MetadataUpdateEvent_filter: MetadataUpdateEvent_filter;
   MintedEvent: MintedEvent;
   MintedEvent_filter: MintedEvent_filter;
   NewPICEvent: NewPICEvent;
@@ -20260,6 +19793,7 @@ export type ResolversParentTypes = ResolversObject<{
   SuperTokenLogicUpdatedEvent_filter: SuperTokenLogicUpdatedEvent_filter;
   SuperTokenMinimumDepositChangedEvent: SuperTokenMinimumDepositChangedEvent;
   SuperTokenMinimumDepositChangedEvent_filter: SuperTokenMinimumDepositChangedEvent_filter;
+  Timestamp: Scalars['Timestamp'];
   Token: Token;
   TokenDowngradedEvent: TokenDowngradedEvent;
   TokenDowngradedEvent_filter: TokenDowngradedEvent_filter;
@@ -20526,26 +20060,7 @@ export type ApprovalEventResolvers<ContextType = MeshContext, ParentType extends
   order?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   owner?: Resolver<ResolversTypes['Account'], ParentType, ContextType>;
   to?: Resolver<ResolversTypes['Account'], ParentType, ContextType>;
-  isNFTApproval?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   amount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  tokenId?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type ApprovalForAllEventResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['ApprovalForAllEvent'] = ResolversParentTypes['ApprovalForAllEvent']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  transactionHash?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
-  gasPrice?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  gasUsed?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  timestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  addresses?: Resolver<Array<ResolversTypes['Bytes']>, ParentType, ContextType>;
-  blockNumber?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  logIndex?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  order?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  owner?: Resolver<ResolversTypes['Account'], ParentType, ContextType>;
-  operator?: Resolver<ResolversTypes['Account'], ParentType, ContextType>;
-  approved?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -20691,7 +20206,7 @@ export type DistributionClaimedEventResolvers<ContextType = MeshContext, ParentT
 }>;
 
 export type EventResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Event'] = ResolversParentTypes['Event']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'AgreementClassRegisteredEvent' | 'AgreementClassUpdatedEvent' | 'AgreementLiquidatedByEvent' | 'AgreementLiquidatedV2Event' | 'AppRegisteredEvent' | 'ApprovalEvent' | 'ApprovalForAllEvent' | 'BondIncreasedEvent' | 'BufferAdjustedEvent' | 'BurnedEvent' | 'CFAv1LiquidationPeriodChangedEvent' | 'ConfigChangedEvent' | 'CustomSuperTokenCreatedEvent' | 'DistributionClaimedEvent' | 'ExitRateChangedEvent' | 'FlowDistributionUpdatedEvent' | 'FlowOperatorUpdatedEvent' | 'FlowUpdatedEvent' | 'GovernanceReplacedEvent' | 'IndexCreatedEvent' | 'IndexDistributionClaimedEvent' | 'IndexSubscribedEvent' | 'IndexUnitsUpdatedEvent' | 'IndexUnsubscribedEvent' | 'IndexUpdatedEvent' | 'InstantDistributionUpdatedEvent' | 'JailEvent' | 'MemberUnitsUpdatedEvent' | 'MetadataUpdateEvent' | 'MintedEvent' | 'NewPICEvent' | 'PPPConfigurationChangedEvent' | 'PoolConnectionUpdatedEvent' | 'PoolCreatedEvent' | 'RewardAddressChangedEvent' | 'RoleAdminChangedEvent' | 'RoleGrantedEvent' | 'RoleRevokedEvent' | 'SentEvent' | 'SetEvent' | 'SubscriptionApprovedEvent' | 'SubscriptionDistributionClaimedEvent' | 'SubscriptionRevokedEvent' | 'SubscriptionUnitsUpdatedEvent' | 'SuperTokenCreatedEvent' | 'SuperTokenFactoryUpdatedEvent' | 'SuperTokenLogicCreatedEvent' | 'SuperTokenLogicUpdatedEvent' | 'SuperTokenMinimumDepositChangedEvent' | 'TokenDowngradedEvent' | 'TokenUpgradedEvent' | 'TransferEvent' | 'TrustedForwarderChangedEvent', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'AgreementClassRegisteredEvent' | 'AgreementClassUpdatedEvent' | 'AgreementLiquidatedByEvent' | 'AgreementLiquidatedV2Event' | 'AppRegisteredEvent' | 'ApprovalEvent' | 'BondIncreasedEvent' | 'BufferAdjustedEvent' | 'BurnedEvent' | 'CFAv1LiquidationPeriodChangedEvent' | 'ConfigChangedEvent' | 'CustomSuperTokenCreatedEvent' | 'DistributionClaimedEvent' | 'ExitRateChangedEvent' | 'FlowDistributionUpdatedEvent' | 'FlowOperatorUpdatedEvent' | 'FlowUpdatedEvent' | 'GovernanceReplacedEvent' | 'IndexCreatedEvent' | 'IndexDistributionClaimedEvent' | 'IndexSubscribedEvent' | 'IndexUnitsUpdatedEvent' | 'IndexUnsubscribedEvent' | 'IndexUpdatedEvent' | 'InstantDistributionUpdatedEvent' | 'JailEvent' | 'MemberUnitsUpdatedEvent' | 'MintedEvent' | 'NewPICEvent' | 'PPPConfigurationChangedEvent' | 'PoolConnectionUpdatedEvent' | 'PoolCreatedEvent' | 'RewardAddressChangedEvent' | 'RoleAdminChangedEvent' | 'RoleGrantedEvent' | 'RoleRevokedEvent' | 'SentEvent' | 'SetEvent' | 'SubscriptionApprovedEvent' | 'SubscriptionDistributionClaimedEvent' | 'SubscriptionRevokedEvent' | 'SubscriptionUnitsUpdatedEvent' | 'SuperTokenCreatedEvent' | 'SuperTokenFactoryUpdatedEvent' | 'SuperTokenLogicCreatedEvent' | 'SuperTokenLogicUpdatedEvent' | 'SuperTokenMinimumDepositChangedEvent' | 'TokenDowngradedEvent' | 'TokenUpgradedEvent' | 'TransferEvent' | 'TrustedForwarderChangedEvent', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   blockNumber?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   logIndex?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
@@ -21055,21 +20570,6 @@ export type MemberUnitsUpdatedEventResolvers<ContextType = MeshContext, ParentTy
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type MetadataUpdateEventResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['MetadataUpdateEvent'] = ResolversParentTypes['MetadataUpdateEvent']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  transactionHash?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
-  gasPrice?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  gasUsed?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  timestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  addresses?: Resolver<Array<ResolversTypes['Bytes']>, ParentType, ContextType>;
-  blockNumber?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  logIndex?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  order?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  tokenId?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
 export type MintedEventResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['MintedEvent'] = ResolversParentTypes['MintedEvent']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   transactionHash?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
@@ -21331,10 +20831,6 @@ export type QueryResolvers<ContextType = MeshContext, ParentType extends Resolve
   tokenUpgradedEvents?: Resolver<Array<ResolversTypes['TokenUpgradedEvent']>, ParentType, ContextType, RequireFields<QuerytokenUpgradedEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
   approvalEvent?: Resolver<Maybe<ResolversTypes['ApprovalEvent']>, ParentType, ContextType, RequireFields<QueryapprovalEventArgs, 'id' | 'subgraphError'>>;
   approvalEvents?: Resolver<Array<ResolversTypes['ApprovalEvent']>, ParentType, ContextType, RequireFields<QueryapprovalEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  approvalForAllEvent?: Resolver<Maybe<ResolversTypes['ApprovalForAllEvent']>, ParentType, ContextType, RequireFields<QueryapprovalForAllEventArgs, 'id' | 'subgraphError'>>;
-  approvalForAllEvents?: Resolver<Array<ResolversTypes['ApprovalForAllEvent']>, ParentType, ContextType, RequireFields<QueryapprovalForAllEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  metadataUpdateEvent?: Resolver<Maybe<ResolversTypes['MetadataUpdateEvent']>, ParentType, ContextType, RequireFields<QuerymetadataUpdateEventArgs, 'id' | 'subgraphError'>>;
-  metadataUpdateEvents?: Resolver<Array<ResolversTypes['MetadataUpdateEvent']>, ParentType, ContextType, RequireFields<QuerymetadataUpdateEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
   customSuperTokenCreatedEvent?: Resolver<Maybe<ResolversTypes['CustomSuperTokenCreatedEvent']>, ParentType, ContextType, RequireFields<QuerycustomSuperTokenCreatedEventArgs, 'id' | 'subgraphError'>>;
   customSuperTokenCreatedEvents?: Resolver<Array<ResolversTypes['CustomSuperTokenCreatedEvent']>, ParentType, ContextType, RequireFields<QuerycustomSuperTokenCreatedEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
   superTokenCreatedEvent?: Resolver<Maybe<ResolversTypes['SuperTokenCreatedEvent']>, ParentType, ContextType, RequireFields<QuerysuperTokenCreatedEventArgs, 'id' | 'subgraphError'>>;
@@ -21654,10 +21150,6 @@ export type SubscriptionResolvers<ContextType = MeshContext, ParentType extends 
   tokenUpgradedEvents?: SubscriptionResolver<Array<ResolversTypes['TokenUpgradedEvent']>, "tokenUpgradedEvents", ParentType, ContextType, RequireFields<SubscriptiontokenUpgradedEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
   approvalEvent?: SubscriptionResolver<Maybe<ResolversTypes['ApprovalEvent']>, "approvalEvent", ParentType, ContextType, RequireFields<SubscriptionapprovalEventArgs, 'id' | 'subgraphError'>>;
   approvalEvents?: SubscriptionResolver<Array<ResolversTypes['ApprovalEvent']>, "approvalEvents", ParentType, ContextType, RequireFields<SubscriptionapprovalEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  approvalForAllEvent?: SubscriptionResolver<Maybe<ResolversTypes['ApprovalForAllEvent']>, "approvalForAllEvent", ParentType, ContextType, RequireFields<SubscriptionapprovalForAllEventArgs, 'id' | 'subgraphError'>>;
-  approvalForAllEvents?: SubscriptionResolver<Array<ResolversTypes['ApprovalForAllEvent']>, "approvalForAllEvents", ParentType, ContextType, RequireFields<SubscriptionapprovalForAllEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  metadataUpdateEvent?: SubscriptionResolver<Maybe<ResolversTypes['MetadataUpdateEvent']>, "metadataUpdateEvent", ParentType, ContextType, RequireFields<SubscriptionmetadataUpdateEventArgs, 'id' | 'subgraphError'>>;
-  metadataUpdateEvents?: SubscriptionResolver<Array<ResolversTypes['MetadataUpdateEvent']>, "metadataUpdateEvents", ParentType, ContextType, RequireFields<SubscriptionmetadataUpdateEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
   customSuperTokenCreatedEvent?: SubscriptionResolver<Maybe<ResolversTypes['CustomSuperTokenCreatedEvent']>, "customSuperTokenCreatedEvent", ParentType, ContextType, RequireFields<SubscriptioncustomSuperTokenCreatedEventArgs, 'id' | 'subgraphError'>>;
   customSuperTokenCreatedEvents?: SubscriptionResolver<Array<ResolversTypes['CustomSuperTokenCreatedEvent']>, "customSuperTokenCreatedEvents", ParentType, ContextType, RequireFields<SubscriptioncustomSuperTokenCreatedEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
   superTokenCreatedEvent?: SubscriptionResolver<Maybe<ResolversTypes['SuperTokenCreatedEvent']>, "superTokenCreatedEvent", ParentType, ContextType, RequireFields<SubscriptionsuperTokenCreatedEventArgs, 'id' | 'subgraphError'>>;
@@ -21873,6 +21365,10 @@ export type SuperTokenMinimumDepositChangedEventResolvers<ContextType = MeshCont
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Timestamp'], any> {
+  name: 'Timestamp';
+}
+
 export type TokenResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Token'] = ResolversParentTypes['Token']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   createdAtTimestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
@@ -22027,7 +21523,6 @@ export type TransferEventResolvers<ContextType = MeshContext, ParentType extends
   order?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   from?: Resolver<ResolversTypes['Account'], ParentType, ContextType>;
   to?: Resolver<ResolversTypes['Account'], ParentType, ContextType>;
-  isNFTTransfer?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   value?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   token?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -22057,6 +21552,7 @@ export type _Block_Resolvers<ContextType = MeshContext, ParentType extends Resol
   hash?: Resolver<Maybe<ResolversTypes['Bytes']>, ParentType, ContextType>;
   number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   timestamp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  parentHash?: Resolver<Maybe<ResolversTypes['Bytes']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -22077,7 +21573,6 @@ export type Resolvers<ContextType = MeshContext> = ResolversObject<{
   AgreementLiquidatedV2Event?: AgreementLiquidatedV2EventResolvers<ContextType>;
   AppRegisteredEvent?: AppRegisteredEventResolvers<ContextType>;
   ApprovalEvent?: ApprovalEventResolvers<ContextType>;
-  ApprovalForAllEvent?: ApprovalForAllEventResolvers<ContextType>;
   BigDecimal?: GraphQLScalarType;
   BigInt?: GraphQLScalarType;
   BondIncreasedEvent?: BondIncreasedEventResolvers<ContextType>;
@@ -22107,7 +21602,6 @@ export type Resolvers<ContextType = MeshContext> = ResolversObject<{
   Int8?: GraphQLScalarType;
   JailEvent?: JailEventResolvers<ContextType>;
   MemberUnitsUpdatedEvent?: MemberUnitsUpdatedEventResolvers<ContextType>;
-  MetadataUpdateEvent?: MetadataUpdateEventResolvers<ContextType>;
   MintedEvent?: MintedEventResolvers<ContextType>;
   NewPICEvent?: NewPICEventResolvers<ContextType>;
   PPPConfigurationChangedEvent?: PPPConfigurationChangedEventResolvers<ContextType>;
@@ -22138,6 +21632,7 @@ export type Resolvers<ContextType = MeshContext> = ResolversObject<{
   SuperTokenLogicCreatedEvent?: SuperTokenLogicCreatedEventResolvers<ContextType>;
   SuperTokenLogicUpdatedEvent?: SuperTokenLogicUpdatedEventResolvers<ContextType>;
   SuperTokenMinimumDepositChangedEvent?: SuperTokenMinimumDepositChangedEventResolvers<ContextType>;
+  Timestamp?: GraphQLScalarType;
   Token?: TokenResolvers<ContextType>;
   TokenDowngradedEvent?: TokenDowngradedEventResolvers<ContextType>;
   TokenGovernanceConfig?: TokenGovernanceConfigResolvers<ContextType>;
@@ -22202,7 +21697,7 @@ const superfluidProtocolTransforms = [];
 const additionalTypeDefs = [] as any[];
 const superfluidProtocolHandler = new GraphqlHandler({
               name: "superfluid-protocol",
-              config: {"endpoint":"{context.url:https://base-mainnet.subgraph.x.superfluid.dev}","timeout":3000},
+              config: {"endpoint":"{context.url:https://optimism-mainnet.subgraph.x.superfluid.dev}","timeout":3000},
               baseDir,
               cache,
               pubsub,
@@ -22250,6 +21745,12 @@ const merger = new(BareMerger as any)({
           return printWithCache(GetPoolsThatCouldHaveClaimableBalanceDocument);
         },
         location: 'GetPoolsThatCouldHaveClaimableBalanceDocument.graphql'
+      },{
+        document: GetTokenDocument,
+        get rawSDL() {
+          return printWithCache(GetTokenDocument);
+        },
+        location: 'GetTokenDocument.graphql'
       }
     ];
     },
@@ -22296,6 +21797,16 @@ export type GetPoolsThatCouldHaveClaimableBalanceQueryVariables = Exact<{
 
 export type GetPoolsThatCouldHaveClaimableBalanceQuery = { poolMembers: Array<{ pool: Pick<Pool, 'id'> }> };
 
+export type GetTokenQueryVariables = Exact<{
+  token: Scalars['ID'];
+}>;
+
+
+export type GetTokenQuery = { token?: Maybe<(
+    Pick<Token, 'isSuperToken' | 'isNativeAssetSuperToken'>
+    & { underlyingToken?: Maybe<Pick<Token, 'id' | 'decimals'>> }
+  )> };
+
 
 export const GetPoolsThatCouldHaveClaimableBalanceDocument = gql`
     query GetPoolsThatCouldHaveClaimableBalance($account: String!, $token: String!) {
@@ -22309,6 +21820,19 @@ export const GetPoolsThatCouldHaveClaimableBalanceDocument = gql`
   }
 }
     ` as unknown as DocumentNode<GetPoolsThatCouldHaveClaimableBalanceQuery, GetPoolsThatCouldHaveClaimableBalanceQueryVariables>;
+export const GetTokenDocument = gql`
+    query GetToken($token: ID!) {
+  token(id: $token) {
+    isSuperToken
+    isNativeAssetSuperToken
+    underlyingToken {
+      id
+      decimals
+    }
+  }
+}
+    ` as unknown as DocumentNode<GetTokenQuery, GetTokenQueryVariables>;
+
 
 
 export type Requester<C = {}, E = unknown> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R> | AsyncIterable<R>
@@ -22316,6 +21840,9 @@ export function getSdk<C, E>(requester: Requester<C, E>) {
   return {
     GetPoolsThatCouldHaveClaimableBalance(variables: GetPoolsThatCouldHaveClaimableBalanceQueryVariables, options?: C): Promise<GetPoolsThatCouldHaveClaimableBalanceQuery> {
       return requester<GetPoolsThatCouldHaveClaimableBalanceQuery, GetPoolsThatCouldHaveClaimableBalanceQueryVariables>(GetPoolsThatCouldHaveClaimableBalanceDocument, variables, options) as Promise<GetPoolsThatCouldHaveClaimableBalanceQuery>;
+    },
+    GetToken(variables: GetTokenQueryVariables, options?: C): Promise<GetTokenQuery> {
+      return requester<GetTokenQuery, GetTokenQueryVariables>(GetTokenDocument, variables, options) as Promise<GetTokenQuery>;
     }
   };
 }
