@@ -182,7 +182,7 @@ app.openapi(route, async (c) => {
 
   let maybeCriticalAt = null;
   if (connectedNetFlow < 0n) {
-    if (connectedBalance <= 0n) {
+    if (connectedBalance >= 0n) {
       const hasRemainder =
         connectedBalance % connectedNetFlow === 0n ? false : true;
       const timeToCritical =
